@@ -53,6 +53,9 @@ var defaultImplementationMap = map[memo.Operand][]ImplementationRule{
 	memo.OperandSort: {
 		&ImplSort{},
 	},
+	memo.OperandAdvise:{
+		&ImplAdvise{},
+	},
 }
 
 // ImplTableDual implements LogicalTableDual as PhysicalTableDual.
@@ -164,6 +167,16 @@ func (r *ImplShow) OnImplement(expr *memo.GroupExpr, reqProp *property.PhysicalP
 	showPhys := plannercore.PhysicalShow{ShowContents: show.ShowContents}.Init(show.SCtx())
 	showPhys.SetSchema(logicProp.Schema)
 	return impl.NewShowImpl(showPhys), nil
+}
+
+type ImplAdvise struct {}
+
+func (i ImplAdvise) Match(expr *memo.GroupExpr, prop *property.PhysicalProperty) (matched bool) {
+	return prop.IsEmpty()
+}
+
+func (i ImplAdvise) OnImplement(expr *memo.GroupExpr, reqProp *property.PhysicalProperty) (memo.Implementation, error) {
+	panic("not implemented")
 }
 
 // ImplSelection is the implementation rule which implements LogicalSelection

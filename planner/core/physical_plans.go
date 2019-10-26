@@ -16,6 +16,7 @@ package core
 import (
 	"github.com/pingcap/parser/ast"
 	"github.com/pingcap/parser/model"
+	"github.com/pingcap/parser/mysql"
 	"github.com/pingcap/tidb/expression"
 	"github.com/pingcap/tidb/expression/aggregation"
 	"github.com/pingcap/tidb/kv"
@@ -510,6 +511,24 @@ type PhysicalShow struct {
 	physicalSchemaProducer
 
 	ShowContents
+}
+
+type PhysicalAdvise struct {
+	physicalSchemaProducer
+
+	AdviseContents
+}
+
+func (e *PhysicalAdvise) prepareSchema() error {
+	var fieldNames []string
+	fieldNames = []string{"msg"}
+
+	schema := expression.NewSchema(make([]*expression.Column, 0, len(fieldNames))...)
+	for _, fieldName := range fieldNames {
+		schema.Append(buildColumn("", fieldName, mysql.TypeString, mysql.MaxBlobWidth))
+	}
+	e.SetSchema(schema)
+	return nil
 }
 
 // PhysicalShowDDLJobs is for showing DDL job list.

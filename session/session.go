@@ -33,6 +33,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
+	"github.com/pingcap/log"
 	"github.com/pingcap/parser"
 	"github.com/pingcap/parser/ast"
 	"github.com/pingcap/parser/auth"
@@ -1056,6 +1057,8 @@ func (s *session) Execute(ctx context.Context, sql string) (recordSets []sqlexec
 	if recordSets, err = s.execute(ctx, sql); err != nil {
 		s.sessionVars.StmtCtx.AppendError(err)
 	}
+
+	log.Info("recordset", zap.String("sql", sql), zap.Reflect("r", recordSets))
 	return
 }
 
@@ -1093,6 +1096,9 @@ func (s *session) execute(ctx context.Context, sql string) (recordSets []sqlexec
 	multiQuery := len(stmtNodes) > 1
 	for _, stmtNode := range stmtNodes {
 		s.PrepareTxnCtx(ctx)
+		if ad, ok := stmtNode.(*ast.AdviseStmt); ok {
+			return []sqlexec.RecordSet{&ResultSetAdvise{stmt:ad}}, nil
+		}
 
 		// Step2: Transform abstract syntax tree to a physical plan(stored in executor.ExecStmt).
 		startTS = time.Now()
@@ -1120,6 +1126,9 @@ func (s *session) execute(ctx context.Context, sql string) (recordSets []sqlexec
 		// Step3: Execute the physical plan.
 		if recordSets, err = s.executeStatement(ctx, connID, stmtNode, stmt, recordSets, multiQuery); err != nil {
 			return nil, err
+		}
+		if len(recordSets)>0{
+			log.Info("testttttt", zap.Reflect("fff", recordSets[0].Fields()))
 		}
 	}
 

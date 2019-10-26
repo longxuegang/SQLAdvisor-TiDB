@@ -219,6 +219,11 @@ func (p LogicalShow) Init(ctx sessionctx.Context) *LogicalShow {
 	return &p
 }
 
+func (p LogicalAdvise) Init(ctx sessionctx.Context) *LogicalAdvise {
+	p.baseLogicalPlan = newBaseLogicalPlan(ctx, plancodec.TypeAdvise, &p, 0)
+	return &p
+}
+
 // Init initializes LogicalShowDDLJobs.
 func (p LogicalShowDDLJobs) Init(ctx sessionctx.Context) *LogicalShowDDLJobs {
 	p.baseLogicalPlan = newBaseLogicalPlan(ctx, plancodec.TypeShowDDLJobs, &p, 0)
@@ -230,6 +235,17 @@ func (p PhysicalShow) Init(ctx sessionctx.Context) *PhysicalShow {
 	p.basePhysicalPlan = newBasePhysicalPlan(ctx, plancodec.TypeShow, &p, 0)
 	// Just use pseudo stats to avoid panic.
 	p.stats = &property.StatsInfo{RowCount: 1}
+	return &p
+}
+
+func (p PhysicalAdvise) Init(ctx sessionctx.Context) *PhysicalAdvise {
+	p.basePhysicalPlan = newBasePhysicalPlan(ctx, plancodec.TypeAdvise, &p, 0)
+	// Just use pseudo stats to avoid panic.
+	p.stats = &property.StatsInfo{RowCount: 1}
+	err:=p.prepareSchema()
+	if err != nil {
+		panic(err)
+	}
 	return &p
 }
 

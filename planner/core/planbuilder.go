@@ -402,6 +402,8 @@ func (b *PlanBuilder) Build(ctx context.Context, node ast.Node) (Plan, error) {
 		return b.buildChange(x)
 	case *ast.SplitRegionStmt:
 		return b.buildSplitRegion(x)
+	case *ast.AdviseStmt:
+		return b.buildAdvise(ctx, x)
 	}
 	return nil, ErrUnsupportedType.GenWithStack("Unsupported type %T", node)
 }
@@ -1492,6 +1494,15 @@ func (b *PlanBuilder) buildShow(ctx context.Context, show *ast.ShowStmt) (Plan, 
 		proj.SetChildren(np)
 		return proj, nil
 	}
+	return p, nil
+}
+
+func (b *PlanBuilder) buildAdvise(ctx context.Context, advise *ast.AdviseStmt) (Plan, error) {
+	p := LogicalAdvise{
+		AdviseContents: AdviseContents{
+			Stmt: advise.SelectStmt,
+		},
+	}.Init(b.ctx)
 	return p, nil
 }
 

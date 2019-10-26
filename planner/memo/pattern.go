@@ -61,6 +61,7 @@ const (
 	OperandTableScan
 	// OperandShow is the operand for Show.
 	OperandShow
+	OperandAdvise
 	// OperandUnsupported is the operand for unsupported operators.
 	OperandUnsupported
 )
@@ -102,6 +103,8 @@ func GetOperand(p plannercore.LogicalPlan) Operand {
 		return OperandTableScan
 	case *plannercore.LogicalShow:
 		return OperandShow
+	case *plannercore.LogicalAdvise:
+		return OperandAdvise
 	default:
 		return OperandUnsupported
 	}

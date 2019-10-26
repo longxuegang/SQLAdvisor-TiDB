@@ -208,6 +208,9 @@ func (b *executorBuilder) build(p plannercore.Plan) Executor {
 		return b.buildSQLBindExec(v)
 	case *plannercore.SplitRegion:
 		return b.buildSplitRegion(v)
+	case *plannercore.PhysicalAdvise:
+		return b.buildAdvise(v)
+
 	default:
 		if mp, ok := p.(MockPhysicalPlan); ok {
 			return mp.GetExecutor()
@@ -637,6 +640,17 @@ func (b *executorBuilder) buildShow(v *plannercore.PhysicalShow) Executor {
 		if _, err := e.ctx.Txn(true); err != nil {
 			b.err = err
 		}
+	}
+	return e
+}
+
+func (b *executorBuilder) buildAdvise(v *plannercore.PhysicalAdvise) Executor {
+	e := &AdviseExec{
+		baseExecutor: newBaseExecutor(b.ctx, v.Schema(), v.ExplainID()),
+		Content:      &v.AdviseContents,
+	}
+	e.retFieldTypes= []*types.FieldType{
+		types.NewFieldType(mysql.TypeString),
 	}
 	return e
 }

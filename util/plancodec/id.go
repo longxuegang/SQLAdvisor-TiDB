@@ -94,6 +94,7 @@ const (
 	TypeShowDDLJobs = "ShowDDLJobs"
 	// TypeBatchPointGet is the type of BatchPointGetPlan.
 	TypeBatchPointGet = "Batch_Point_Get"
+	TypeAdvise        = "Advise"
 )
 
 // plan id.
@@ -137,6 +138,7 @@ const (
 	typePointGet
 	typeShowDDLJobs
 	typeBatchPointGet
+	typeAdvise
 )
 
 // TypeStringToPhysicalID converts the plan type string to plan id.
@@ -220,6 +222,8 @@ func TypeStringToPhysicalID(tp string) int {
 		return typeShowDDLJobs
 	case TypeBatchPointGet:
 		return typeBatchPointGet
+	case TypeAdvise:
+		return typeAdvise
 	}
 	// Should never reach here.
 	return 0
@@ -306,6 +310,8 @@ func PhysicalIDToTypeString(id int) string {
 		return TypeShowDDLJobs
 	case typeBatchPointGet:
 		return TypeBatchPointGet
+	case typeAdvise:
+		return TypeAdvise
 	}
 
 	// Should never reach here.
