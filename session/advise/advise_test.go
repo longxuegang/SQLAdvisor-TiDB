@@ -83,9 +83,8 @@ type testSuiteP1 struct{ *baseTestSuite }
 func (s *testSuiteP1) TestPessimisticSelectForUpdate(c *C) {
 	tk := testkit.NewTestKit(c, s.store)
 	tk.MustExec("use test")
-	tk.MustExec("drop table if exists t")
-	tk.MustExec("create table t(id int primary key, a int)")
-	tk.MustExec("insert into t values(1, 1)")
+	tk.MustExec("create table employees(a int , b int,c int ,d int )")
+	//tk.MustExec("select * from employees where a = 1 and b > 1 group by c order by d")
 	//tk.MustQuery("show databases;").Check(testkit.Rows("1 1"))
-	tk.MustQuery("advise select * from t").Check(testkit.Rows("1 1"))
+	tk.MustQuery("advise select * from employees  where a = 1 and b > 1 and c < 2").Check(testkit.Rows("1 1"))
 }

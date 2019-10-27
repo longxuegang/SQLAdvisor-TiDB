@@ -11,8 +11,8 @@ CURDIR := $(shell pwd)
 path_to_add := $(addsuffix /bin,$(subst :,/bin:,$(GOPATH))):$(PWD)/tools/bin
 export PATH := $(path_to_add):$(PATH)
 
-GO              := GO111MODULE=on go
-GOBUILD         := $(GO) build $(BUILD_FLAG) -tags codes -trimpath
+GO              := GOOS=linux GOARCH=amd64 GO111MODULE=on go
+GOBUILD         := $(GO) build $(BUILD_FLAG) -tags codes
 GOBUILDCOVERAGE := GOPATH=$(GOPATH) cd tidb-server; $(GO) test -coverpkg="../..." -c .
 GOTEST          := $(GO) test -p 8
 OVERALLS        := GO111MODULE=on overalls
@@ -186,9 +186,9 @@ endif
 
 server:
 ifeq ($(TARGET), "")
-	CGO_ENABLED=1 $(GOBUILD) $(RACE_FLAG) -ldflags '$(LDFLAGS) $(CHECK_FLAG)' -o bin/tidb-server tidb-server/main.go
+	CGO_ENABLED=0 $(GOBUILD) $(RACE_FLAG) -ldflags '$(LDFLAGS) $(CHECK_FLAG)' -o bin/tidb-server tidb-server/main.go
 else
-	CGO_ENABLED=1 $(GOBUILD) $(RACE_FLAG) -ldflags '$(LDFLAGS) $(CHECK_FLAG)' -o '$(TARGET)' tidb-server/main.go
+	CGO_ENABLED=0 $(GOBUILD) $(RACE_FLAG) -ldflags '$(LDFLAGS) $(CHECK_FLAG)' -o '$(TARGET)' tidb-server/main.go
 endif
 
 server_check:
