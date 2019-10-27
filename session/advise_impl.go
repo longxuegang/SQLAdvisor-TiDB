@@ -2,6 +2,7 @@ package session
 
 import (
 	"bytes"
+	"math"
 	"sort"
 
 	"github.com/pingcap/errors"
@@ -37,22 +38,22 @@ type Target struct {
 }
 
 func GetAvgScanNum(r *ResultSetAdvise, databaseName string, tableName string, field string) (float64, error) {
-	//rowCount, err := r.getRowCount(databaseName, tableName)
-	//if err != nil {
-	//	return 0, errors.Trace(err)
-	//}
-	//disCount, err := r.getDistinctCount(databaseName, tableName, field)
-	//if err != nil {
-	//	return 0, errors.Trace(err)
-	//}
-	//log.Info("GetAvgScanNum",
-	//	zap.Int64("rowCount", rowCount),
-	//	zap.Int64("disCount", disCount))
-	//if disCount == 0 {
-	//	return math.MaxFloat64, nil
-	//}
-	//return float64(rowCount / disCount), nil
-	return 1, nil
+	rowCount, err := r.getRowCount(databaseName, tableName)
+	if err != nil {
+		return 0, errors.Trace(err)
+	}
+	disCount, err := r.getDistinctCount(databaseName, tableName, field)
+	if err != nil {
+		return 0, errors.Trace(err)
+	}
+	log.Info("GetAvgScanNum",
+		zap.Int64("rowCount", rowCount),
+		zap.Int64("disCount", disCount))
+	if disCount == 0 {
+		return math.MaxFloat64, nil
+	}
+	return float64(rowCount / disCount), nil
+	//return 1, nil
 }
 
 func GetIndexAdviser(r *ResultSetAdvise, adviseVisitor *AdviseVisitor) ([]Target, []string, error) {
