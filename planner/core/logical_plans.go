@@ -872,6 +872,15 @@ type LogicalShow struct {
 	ShowContents
 }
 
+type LogicalAdvise struct{
+	logicalSchemaProducer
+	AdviseContents
+}
+
+type AdviseContents struct {
+	Stmt ast.DMLNode
+}
+
 // LogicalShowDDLJobs is for showing DDL job list.
 type LogicalShowDDLJobs struct {
 	logicalSchemaProducer

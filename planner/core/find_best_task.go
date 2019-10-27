@@ -97,6 +97,15 @@ func (p *LogicalShow) findBestTask(prop *property.PhysicalProperty) (task, error
 	return &rootTask{p: pShow}, nil
 }
 
+func (p *LogicalAdvise) findBestTask(prop *property.PhysicalProperty) (task, error) {
+	if !prop.IsEmpty() {
+		return invalidTask, nil
+	}
+	pShow := PhysicalAdvise{AdviseContents: p.AdviseContents}.Init(p.ctx)
+	pShow.SetSchema(p.schema)
+	return &rootTask{p: pShow}, nil
+}
+
 func (p *LogicalShowDDLJobs) findBestTask(prop *property.PhysicalProperty) (task, error) {
 	if !prop.IsEmpty() {
 		return invalidTask, nil

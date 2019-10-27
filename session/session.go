@@ -1056,6 +1056,8 @@ func (s *session) Execute(ctx context.Context, sql string) (recordSets []sqlexec
 	if recordSets, err = s.execute(ctx, sql); err != nil {
 		s.sessionVars.StmtCtx.AppendError(err)
 	}
+
+	//log.Info("recordset", zap.String("sql", sql), zap.Reflect("r", recordSets))
 	return
 }
 
@@ -1093,6 +1095,10 @@ func (s *session) execute(ctx context.Context, sql string) (recordSets []sqlexec
 	multiQuery := len(stmtNodes) > 1
 	for _, stmtNode := range stmtNodes {
 		s.PrepareTxnCtx(ctx)
+		if ad, ok := stmtNode.(*ast.AdviseStmt); ok {
+			is:=executor.GetInfoSchema(s)
+			return []sqlexec.RecordSet{&ResultSetAdvise{stmt:ad,session:s,is:is}}, nil
+		}
 
 		// Step2: Transform abstract syntax tree to a physical plan(stored in executor.ExecStmt).
 		startTS = time.Now()
